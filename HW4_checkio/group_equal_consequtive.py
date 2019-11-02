@@ -16,10 +16,10 @@ def group_equal(list_to_group, prefix=[]):  # Pycharm ноет, но Артем 
             return group_equal(list_to_group[i + 1:], prefix + [equal_consecutive])
 
 
-print(group_equal([1, 1, 4, 4, 4, "hello", "hello", 4]))
-print(group_equal([1, 2, 3, 4]))
-print(group_equal([1]))
-print(group_equal([]))
+# print(group_equal([1, 1, 4, 4, 4, "hello", "hello", 4]))
+# print(group_equal([1, 2, 3, 4]))
+# print(group_equal([1]))
+# print(group_equal([]))
 
 
 # Вторая попытка задумывалась адекватной, но все равно получилось чутка по-уродски
@@ -34,8 +34,8 @@ def group_equal_2(list_to_group):
             result.append([equal for equal in equal_consecutive])
             break
         elif list_to_group[i] != list_to_group[i + 1]:
-            result.append([equal for equal in equal_consecutive])
-            equal_consecutive.clear()
+            result.append(equal_consecutive[:])
+            equal_consecutive = []
     return result
 
 

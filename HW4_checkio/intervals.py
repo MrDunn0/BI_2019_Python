@@ -1,6 +1,7 @@
 def get_intervals(set_of_ints):
-    sorted_set_of_ints = sorted(list(set_of_ints))
+    sorted_set_of_ints = sorted(set_of_ints)
     result = []
+    start_of_interval = 0
     for i in range(len(sorted_set_of_ints)):
         if i == 0:
             start_of_interval = sorted_set_of_ints[i]
