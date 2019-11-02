@@ -9,8 +9,8 @@ def common_words(str1, str2):
     for word in str_2_words:
         if word in dict_with_str_1_words:
             result.append(word)
-    return result
+    return ",".join(result)
 
-# print(common_words("one,two,three", "four,five,one,two,six,three"))
-# print(common_words("hello,world", "hello,earth"))
-# print(common_words("one,two,three", "four,five,six"))
+print(common_words("one,two,three", "four,five,one,two,six,three"))
+print(common_words("hello,world", "hello,earth"))
+print(common_words("one,two,three", "four,five,six"))
