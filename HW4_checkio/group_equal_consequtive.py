@@ -34,7 +34,7 @@ def group_equal_2(list_to_group):
             result.append([equal for equal in equal_consecutive])
             break
         elif list_to_group[i] != list_to_group[i + 1]:
-            result.append(equal_consecutive[:])
+            result.append(equal_consecutive)
             equal_consecutive = []
     return result
 
