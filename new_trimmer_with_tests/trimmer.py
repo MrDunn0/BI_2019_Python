@@ -59,14 +59,14 @@ def sliding_window(fq_read, window_size, required_quality):
     good_record = None
     windows = int(len(fq_read) // window_size) + 1
     if windows > 1:
-        for window in range(1, windows+1):
+        for window in range(1, windows + 1):
             sub_record = fq_read[0:window_size * window]
             average_quality = sum(sub_record[-window_size:].phred_quality) / window_size
             if average_quality < required_quality:
                 break
             good_record = sub_record
     else:
-        if sum(fq_read.phred_quality)/len(fq_read) >= required_quality:
+        if sum(fq_read.phred_quality) / len(fq_read) >= required_quality:
             good_record = fq_read
     return good_record
 
@@ -107,7 +107,7 @@ def apply_trimmers(fq_read, args):
     return fq_read
 
 
-def apply_filters(fastq_read:str, min_length, gc_min, gc_max):
+def apply_filters(fastq_read: str, min_length, gc_min, gc_max):
     return len(fastq_read) >= min_length and gc_min <= gc_content(fastq_read) <= gc_max
 
 
@@ -137,7 +137,6 @@ def parse_args():
         help="The range of quantitative content of GC. First and second values are min and max respectively."
              "If only one value is specified, then reads with greater or equal value will be selected."
              "If not value specified, all reads will be selected."
-             "Example: python3 trimmer.py --gc_bounds 45 --gc_bounds 50 my_reads.fastq"
     )
     parser.add_argument(
         "--output_base_name",
@@ -191,17 +190,22 @@ def main(args):
             statistics["reads_total"] += 1
             fq_read = apply_trimmers(initial_read, args)
             if fq_read:
+
                 if apply_filters(fq_read.seq, args.min_length, args.gc_bounds[0], args.gc_bounds[1]):
                     passed_output.write("\n".join(fq_read.read) + "\n")
                     statistics["passed_counter"] += 1
-                elif args.keep_filtered:
-                    failed_output.write("\n".join(initial_read.read) + "\n")
+                else:
                     statistics["failed_counter"] += 1
                     statistics["failed_on_filters"] += 1
-            elif args.keep_filtered:
-                failed_output.write("\n".join(initial_read.read) + "\n")
+
+                if args.keep_filtered:
+                    failed_output.write("\n".join(initial_read.read) + "\n")
+            else:
                 statistics["failed_counter"] += 1
                 statistics["failed_on_trimming"] += 1
+
+            if args.keep_filtered:
+                failed_output.write("\n".join(initial_read.read) + "\n")
 
         if args.keep_filtered:
             failed_output.close()
@@ -216,7 +220,8 @@ if __name__ == '__main__':
                                           round(statistics["passed_counter"] / statistics["reads_total"] * 100, 2)))
     print("Reads failed: {} ({}%)".format(statistics["failed_counter"],
                                           round(statistics["failed_counter"] / statistics["reads_total"] * 100, 2)))
-    print("Filed by GC content or min length : {} ({}%)".format(statistics["failed_on_filters"], round(
-        statistics["failed_on_filters"] / statistics["failed_counter"] * 100, 2)))
-    print("Failed by quality or fully trimmed: {} ({}%)".format(statistics["failed_on_trimming"], round(
-        statistics["failed_on_trimming"] / statistics["failed_counter"] * 100, 2)))
+    if statistics["failed_counter"] != 0:
+        print("Filed by GC content or min length : {} ({}%)".format(statistics["failed_on_filters"], round(
+            statistics["failed_on_filters"] / statistics["failed_counter"] * 100, 2)))
+        print("Failed by quality or fully trimmed: {} ({}%)".format(statistics["failed_on_trimming"], round(
+            statistics["failed_on_trimming"] / statistics["failed_counter"] * 100, 2)))
